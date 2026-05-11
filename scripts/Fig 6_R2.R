@@ -1,6 +1,6 @@
 # =========================================================
 # Check metabolic state table level + create sample-level table
-# Folder: D:/UAEU/New paper_Dr. Ajaz/Fig 8
+# Folder: D:/UAEU/Fig 8
 # =========================================================
 
 library(data.table)
@@ -10,7 +10,7 @@ library(dplyr)
 # 1. Set folder paths
 # -----------------------------
 
-base_dir <- "D:/UAEU/Dr. Ajaz/New paper_Dr. Ajaz/Fig 8"
+base_dir <- "D:/UAEU/Fig 6"
 
 out_dir <- file.path(base_dir, "Output_lncRNA_Figure6")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
@@ -208,7 +208,7 @@ cat("\nDone. Files saved in:\n", out_dir, "\n")
 
 library(data.table)
 
-gtf_file <- "D:/UAEU/Dr. Ajaz/New paper_Dr. Ajaz/Fig 8/gencode.v22.annotation.gtf.gz"
+gtf_file <- "D:/UAEU/Fig 6/gencode.v22.annotation.gtf.gz"
 
 # Step 1: read lines properly
 gtf_lines <- readLines(gzfile(gtf_file))
@@ -283,30 +283,11 @@ head(lnc_annot)
 
 # =========================================================
 # RAM-OPTIMIZED FIGURE 6: lncRNA analysis
-# START FROM HERE AFTER lnc_annot IS CREATED
-# Folder: D:/UAEU/New paper_Dr. Ajaz/Fig 8
 # =========================================================
-
-suppressPackageStartupMessages({
-  library(data.table)
-  library(dplyr)
-  library(tidyr)
-  library(ggplot2)
-  library(ggrepel)
-  library(ComplexHeatmap)
-  library(circlize)
-  library(survival)
-})
-
-set.seed(123)
 
 # -----------------------------
 # 0. Paths
-# -----------------------------
-base_dir <- "D:/UAEU/Dr. Ajaz/New paper_Dr. Ajaz/Fig 8"
-out_dir <- file.path(base_dir, "Output_lncRNA_Figure6")
-dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
-
+# ----------------------------
 expr_file  <- file.path(base_dir, "tcga_RSEM_gene_tpm")
 state_file <- file.path(base_dir, "Figure1E_TCGA_MetabolicStates_Table.tsv")
 pheno_file <- list.files(base_dir, pattern = "^TCGA_phenotype_denseDataOnlyDownload", full.names = TRUE)[1]
@@ -532,7 +513,7 @@ print(table(meta2$state, useNA = "ifany"))
 # =========================================================
 
 # -----------------------------
-# Fix state levels exactly
+# Fix state levels
 # -----------------------------
 meta2$state <- trimws(as.character(meta2$state))
 
@@ -629,8 +610,7 @@ ggsave(file.path(out_dir, "Figure6A_lncRNA_PCA.jpg"), p6A, width = 7, height = 5
 
 
 # =========================================================
-# FIGURE 6B: Differential lncRNA expression - safest version
-# Uses row index + column index
+# FIGURE 6B: Differential lncRNA expression
 # =========================================================
 
 stopifnot(ncol(lnc_mat2) == nrow(meta2))
@@ -725,17 +705,8 @@ p6B <- ggplot(diff_lnc, aes(x = effect, y = neglog10, color = regulation)) +
 ggsave(file.path(out_dir, "Figure6B_lncRNA_Volcano.pdf"), p6B, width = 8, height = 6)
 ggsave(file.path(out_dir, "Figure6B_lncRNA_Volcano.jpg"), p6B, width = 8, height = 6, dpi = 400)
 # =========================================================
-# FIGURE 6C: Heatmap across four states
-# =========================================================
-# =========================================================
 # Figure 6C: ggplot heatmap of top lncRNAs by metabolic state
 # =========================================================
-
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(tibble)
-
 top_lnc <- diff_lnc %>%
   filter(FDR < 0.05) %>%
   arrange(FDR) %>%
@@ -899,18 +870,7 @@ cat("\nDone. lncRNA Figure 6 saved in:\n", out_dir, "\n")
 
 # =========================================================
 # FIGURE 6E-F + SUPPLEMENT:
-# Integrated miRNA-lncRNA-mRNA regulatory analysis
-# Run AFTER Figure 6D
 # =========================================================
-
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(data.table)
-library(igraph)
-library(ggraph)
-library(tibble)
-library(scales)
 
 # -----------------------------
 # 0. Required objects
@@ -1369,20 +1329,7 @@ ggsave(file.path(out_dir, "Supplementary_PanCancer_Regulatory_Validation_Heatmap
 
 # =========================================================
 # FIGURE 6F: ceRNA lncRNA-miRNA-mRNA triplet analysis
-# Uses multiMiR for validated miRNA-mRNA targets
-# Run AFTER Figure 6D
 # =========================================================
-
-suppressPackageStartupMessages({
-  library(data.table)
-  library(dplyr)
-  library(tidyr)
-  library(ggplot2)
-  library(igraph)
-  library(ggraph)
-  library(tibble)
-})
-
 # -----------------------------
 # 1. Install/load multiMiR
 # -----------------------------
@@ -1399,9 +1346,6 @@ library(multiMiR)
 # -----------------------------
 # 2. First create the file
 # -----------------------------
-
-library(data.table)
-library(dplyr)
 
 # load your edges file
 edges_all <- fread(file.path(out_dir, "Figure6E_Integrated_miRNA_lncRNA_mRNA_Edges.csv"))
@@ -1450,10 +1394,6 @@ lnc_mirna_db <- lnc_mirna_db %>%
   dplyr::distinct()
 
 cat("lncRNA-miRNA pairs loaded:", nrow(lnc_mirna_db), "\n")
-
-# -----------------------------
-# 3. Get validated miRNA-mRNA targets using multiMiR
-# -----------------------------
 
 # -----------------------------
 # 3. Create miRNA-mRNA targets from your existing edge file
@@ -1584,7 +1524,6 @@ mirna_mrna_db$miRNA <- gsub("MIR", "miR", mirna_mrna_db$miRNA)
 
 # -----------------------------
 # 9. Build candidate triplets
-# More flexible version
 # -----------------------------
 
 cat("lnc_mirna_db miRNAs:", length(unique(lnc_mirna_db$miRNA)), "\n")
@@ -1632,10 +1571,6 @@ get_cor <- function(x, y) {
 
 # -----------------------------
 # 11. Test ceRNA correlation pattern
-# Required:
-# lncRNA-mRNA positive
-# miRNA-lncRNA negative
-# miRNA-mRNA negative
 # -----------------------------
 
 triplet_results <- candidate_triplets %>%
@@ -1816,7 +1751,6 @@ cat("Figure 6E ceRNA network saved.\n")
 
 # =========================================================
 # SUPPLEMENTARY ceRNA NETWORK: Expanded lncRNA-miRNA-mRNA network
-# Relaxed version for Supplementary Figure
 # =========================================================
 
 # -----------------------------
