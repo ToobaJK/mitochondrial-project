@@ -17,7 +17,7 @@ library(RColorBrewer)
 # -----------------------------
 # 1. Paths
 # -----------------------------
-setwd("D:/UAEU/Dr. Ajaz/New paper_Dr. Ajaz/Fig 7")
+setwd("D:/UAEU/Fig 5")
 
 output_dir <- "outputR3"
 if (!dir.exists(output_dir)) dir.create(output_dir)
@@ -458,13 +458,7 @@ ggsave(
 # =========================================================
 # FIGURE 5C: Pan-cancer miRNA expression heatmap
 # Row-wise Z-score across metabolic states
-# Saves PDF + JPG
 # =========================================================
-
-library(dplyr)
-library(ggplot2)
-library(scales)
-
 # -----------------------------
 # 1. State order, labels, colors
 # -----------------------------
@@ -581,14 +575,9 @@ ggsave(
 # FIGURE 5D: Pan-cancer miRNA heatmap annotated by metabolic state
 # miRNA x cancer type + metabolic-state annotation
 # =========================================================
-
-library(dplyr)
-library(ggplot2)
-library(scales)
-
 # -----------------------------
 # 1. Select miRNAs
-# Option A: top variable miRNAs
+# top variable miRNAs
 # -----------------------------
 top_mirnas <- names(
   sort(apply(mirna_mat, 1, var, na.rm = TRUE), decreasing = TRUE)
@@ -643,7 +632,7 @@ cancer_order <- heat_cancer %>%
 heat_cancer$cancer_code <- factor(heat_cancer$cancer_code, levels = cancer_order)
 
 # -----------------------------
-# 5. Main heatmap
+# 5. heatmap
 # -----------------------------
 p5D_main <- ggplot(
   heat_cancer,
@@ -697,17 +686,7 @@ ggsave(
 
 # =========================================================
 # FIGURE 5E: Integrated pan-cancer miRNA heatmap
-# X-axis = TCGA cancers grouped by metabolic state
-# Top bar = metabolic state
-# Color = row-wise Z-score
-# Saves PDF + JPG
 # =========================================================
-
-library(dplyr)
-library(ggplot2)
-library(scales)
-library(patchwork)
-
 # -----------------------------
 # 1. State order and colors
 # -----------------------------
@@ -798,7 +777,7 @@ p_top <- ggplot(
   )
 
 # -----------------------------
-# 8. Main heatmap
+# 8. heatmap
 # -----------------------------
 p_main <- ggplot(
   heat_cancer,
@@ -867,31 +846,13 @@ ggsave(
   height = 10,
   dpi = 300
 )
-
-
 # =========================================================
 # FIGURE 5F: miRNA–metabolic gene correlation heatmap
 # TCGA miRNA vs TCGA mRNA expression
-# =========================================================
-
-library(data.table)
-library(dplyr)
-library(ggplot2)
-library(scales)
-library(AnnotationDbi)
-library(org.Hs.eg.db)
-
-
+# ========================================================
 # =========================================================
 # Load TCGA mRNA expression exactly like Figure 1
 # =========================================================
-
-library(data.table)
-library(dplyr)
-library(AnnotationDbi)
-library(org.Hs.eg.db)
-
-base_dir <- "D:/UAEU/Dr. Ajaz/New paper_Dr. Ajaz/Pancancer data"
 mrna_file <- file.path(base_dir, "tcga_RSEM_gene_tpm")
 
 tcga_expr <- fread(mrna_file)
@@ -1041,14 +1002,12 @@ if (length(top_mirnas_corr) == 0) {
   stop("No miRNAs found. Check rownames(mirna_mat_corr) and diff_mirna$miRNA.")
 }
 
-
 # -----------------------------
 # 7. Subset matrices
 # -----------------------------
 
 mrna <- tcga_mat_symbol[genes, , drop = FALSE]
 mir  <- mirna_mat_corr[top_mirnas_corr, , drop = FALSE]
-
 
 # -----------------------------
 # 8. Spearman correlation
@@ -1091,7 +1050,6 @@ write.csv(
   file.path(output_dir, "Figure5F_miRNA_MetabolicGene_Correlation_Table.csv"),
   row.names = FALSE
 )
-
 
 # -----------------------------
 # 9. Plot heatmap
@@ -1150,11 +1108,6 @@ ggsave(
 # Uses significant miRNA–gene correlations from Figure 5F
 # =========================================================
 
-library(dplyr)
-library(igraph)
-library(ggraph)
-library(ggplot2)
-
 # -----------------------------
 # 1. Use correct correlation table
 # -----------------------------
@@ -1163,7 +1116,6 @@ cor_net <- cor_results
 
 # Check required columns
 stopifnot(all(c("miRNA", "Gene", "Correlation", "p_adj") %in% colnames(cor_net)))
-
 
 # -----------------------------
 # 2. Select significant correlations
@@ -1296,17 +1248,7 @@ ggsave(
 
 # =========================================================
 # FIGURE 5H: State-specific miRNA–gene regulation bubble plot
-# Correlations computed within each metabolic state
-# x = metabolic gene
-# y = miRNA
-# size = |Spearman rho|
-# color = correlation direction/strength
-# facet = metabolic state
 # =========================================================
-
-library(dplyr)
-library(ggplot2)
-library(scales)
 
 # -----------------------------
 # 1. Prepare sample metadata
@@ -1523,13 +1465,6 @@ ggsave(
 # FIGURE 5I: Clinical relevance of key metabolic-state miRNAs
 # Overall survival analysis
 # =========================================================
-
-library(data.table)
-library(dplyr)
-library(survival)
-library(survminer)
-library(patchwork)
-
 # -----------------------------
 # 1. Add survival file path near your other file paths
 # -----------------------------
@@ -1716,22 +1651,11 @@ ggsave(
 
 # =========================================================
 # FIGURE 5I + SUPPLEMENTARY S5I
-# Cox forest plots for metabolic-state-associated miRNAs
-# Main: Top 10 miRNAs by differential adjusted p-value
-# Supplementary: All significant miRNAs
-# Cox model stratified by cancer type
 # =========================================================
-
-library(data.table)
-library(dplyr)
-library(survival)
-library(ggplot2)
-library(forcats)
 
 # -----------------------------
 # 1. Survival file
 # -----------------------------
-survival_file <- "Survival_SupplementalTable_S1_20171025_xena_sp"
 
 surv <- fread(survival_file, data.table = FALSE)
 colnames(surv) <- make.names(colnames(surv))
@@ -2148,11 +2072,6 @@ ggsave(
 # Supplementary Figure S5J
 # Data-driven selected cancer-type-specific miRNA Cox forest plot
 # =========================================================
-
-library(dplyr)
-library(ggplot2)
-library(forcats)
-
 # -----------------------------
 # 1. Select cancer types objectively
 # -----------------------------
