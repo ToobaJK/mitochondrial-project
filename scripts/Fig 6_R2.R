@@ -1,6 +1,7 @@
 # =========================================================
 # Check metabolic state table level + create sample-level table
-# Folder: D:/UAEU/Fig 8
+# Folder: D:/UAEU/Fig 6
+# Created By: TOOBA
 # =========================================================
 
 library(data.table)
