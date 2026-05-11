@@ -1,7 +1,6 @@
 # =========================================================
 # Figure 1 - Pan-cancer landscape of mitochondrial gatekeeper genes
 # Input: UCSC Xena (TCGA TOIL TPM), Phenotype, Survival, Immune Subtype
-# Output: PDF + JPG in Output_Figure1
 # =========================================================
 
 # -------- Packages --------
@@ -16,7 +15,7 @@ suppressPackageStartupMessages({
 })
 
 # -------- Paths --------
-base_dir <- "D:/UAEU/New paper_Dr. Ajaz/Pancancer data"
+base_dir <- "D:/UAEU/Pancancer data"
 
 expr_file <- file.path(base_dir, "tcga_RSEM_gene_tpm")
 surv_file <- file.path(base_dir, "Survival_SupplementalTable_S1_20171025_xena_sp")
@@ -159,16 +158,8 @@ meta <- meta %>% filter(sample15 %in% colnames(expr_mat)) %>% filter(!is.na(canc
 expr_mat <- expr_mat[, meta$sample15, drop = FALSE]
 
 # -------------------------
-# 3) GENE LIST (starter mitochondrial gatekeepers)
+# 3) GENE LIST 
 # -------------------------
-
-if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
-BiocManager::install(c("AnnotationDbi", "org.Hs.eg.db"))
-
-library(AnnotationDbi)
-library(org.Hs.eg.db)
-
-
 
 # 1) Check if rownames look like Ensembl
 head(rownames(expr_mat))
@@ -203,8 +194,8 @@ rownames(expr_mat_symbol) <- expr_dt2$gene
 # Use this symbol-based matrix from now on
 expr_mat <- expr_mat_symbol
 
-cat("✅ Converted to gene symbols. New dimensions:", dim(expr_mat), "\n")
-cat("✅ Example rownames:", head(rownames(expr_mat)), "\n")
+cat("Converted to gene symbols. New dimensions:", dim(expr_mat), "\n")
+cat(" Example rownames:", head(rownames(expr_mat)), "\n")
 
 mito_genes <- c(
   # Channels/transporters
@@ -238,7 +229,7 @@ saveRDS(expr_mat, file.path(rds_dir, "tcga_expression_matrix_SYMBOLS_log2TPM.rds
 expr_mat <- readRDS(file.path(rds_dir, "tcga_expression_matrix_SYMBOLS_log2TPM.rds"))
 
 # -------------------------
-# TCGA long name -> TCGA code (single source of truth)
+# TCGA long name -> TCGA code 
 # -------------------------
 tcga_abbrev_map <- c(
   "Acute Myeloid Leukemia" = "LAML",
@@ -286,7 +277,7 @@ to_tcga_code <- function(x) {
 
 
 # -------------------------
-# 4) FIGURE 1A: Heatmap (mean per cancer type, z-score per gene)
+# 4) FIGURE 1A: Heatmap
 # -------------------------
 # Merge cancer type
 expr_long <- as.data.frame(t(expr_mito))
@@ -414,23 +405,10 @@ ggsave(file.path(out_dir, "Figure1B_MitometabolicScore_byCancer.pdf"),
 
 ggsave(file.path(out_dir, "Figure1B_MitometabolicScore_byCancer.jpg"),
        p_score, width = 10, height = 8, dpi = 400)
-# -------------------------
-# 6) FIGURE 1C (Optional): Example genes boxplots across cancers
-# -------------------------
 
 # =========================================================
-# Figure 1C (FINAL): Representative mitochondrial gatekeeper genes
-# - Uses TCGA short codes (LUAD, BRCA, etc.)
-# - Facet titles include gene function: e.g., "BAX (Apoptosis gatekeeper)"
-# - Replaces missing SOD2 with PRDX3 (mitochondrial redox enzyme)
-# - Saves PDF + JPG in out_dir
+# Figure 1C : Representative mitochondrial gatekeeper genes
 # =========================================================
-
-suppressPackageStartupMessages({
-  library(dplyr)
-  library(tidyr)
-  library(ggplot2)
-})
 
 # -------------------------
 # 0) Choose genes (SOD2 replaced with PRDX3)
@@ -530,33 +508,15 @@ ggsave(file.path(out_dir, "Figure1C_ExampleGenes_Boxplots_FunctionTitles_TCGAcod
 ggsave(file.path(out_dir, "Figure1C_ExampleGenes_Boxplots_FunctionTitles_TCGAcode.jpg"),
        p_box, width = 14, height = 10, dpi = 400)
 
-####----------------------------------------------------
-###Figure 1D
-###--------------------------------------------------------
-
 # =========================================================
-# Figure 1D: "Metabolic rewiring" = Mito gatekeeper score vs Glycolysis score
-# - Uses your TCGA PanCan expression matrix (expr_mat; gene x sample, log2(TPM+0.001))
-# - Uses meta (sample15, cancer_type) from Xena phenotype/survival merge
-# - Converts cancer names to TCGA short codes (LUAD, BRCA, etc.)
-# - Saves PDF + JPG to out_dir
+# Figure 1D: Mito gatekeeper score vs Glycolysis score
 # =========================================================
-
-suppressPackageStartupMessages({
-  library(dplyr)
-  library(tidyr)
-  library(ggplot2)
-  library(ggrepel)
-})
-
 
 # -------------------------
 # 1) Define gene sets
-#    - Gatekeepers: use your present_genes (from mito list intersection)
-#    - Glycolysis: use a compact Hallmark-like core set (edit/expand anytime)
 # -------------------------
 
-gatekeeper_genes <- present_genes  # your 38 genes (or set to mito_genes[mito_genes %in% rownames(expr_mat)])
+gatekeeper_genes <- present_genes  # 38 genes (or set to mito_genes[mito_genes %in% rownames(expr_mat)])
 
 glycolysis_genes <- c(
   "SLC2A1","SLC2A3",          # Glucose transport
@@ -611,7 +571,7 @@ gate_avg <- avg_by_cancer(expr_mat, gatekeeper_genes_use, meta_df)
 gly_avg  <- avg_by_cancer(expr_mat, glycolysis_genes_use, meta_df)
 
 # -------------------------
-# 3) Z-score per gene across cancer types (to compare programs fairly)
+# 3) Z-score per gene across cancer types 
 # -------------------------
 zscore_rows <- function(m) {
   z <- t(scale(t(m)))
@@ -634,12 +594,8 @@ df_1d <- data.frame(
 # Convert to TCGA abbreviations
 df_1d$cancer_code <- to_tcga_code(df_1d$cancer_type)
 
-# Optional: classify metabolic state by quadrants (based on 0 since scores are z-based)
 # =========================================================
-# Figure 1D (UPDATED):
-# - Replace "Hybrid" with "Both"
-# - Color points by the 4 states (quadrants)
-# - Keep dashed 0-lines
+# Figure 1D 
 # =========================================================
 
 # --- classify metabolic state by quadrants (0-based because scores are z-based)
@@ -689,23 +645,9 @@ ggsave(file.path(out_dir, "Figure1D1_Mito_vs_Glycolysis_Scatter1_TCGAcode.jpg"),
 
 
 # =========================================================
-# Figure 1E: Unsupervised clustering into "mitochondrial metabolic states"
-# - Clusters TCGA cancer TYPES (not individual tumors) using expr_avg_z
-#   (expr_avg_z = gene x cancer_type z-scored matrix from Figure 1A)
-# - Assigns 4 states using k-means (k = 4)
-#   Labels: "Mito-High", "Mito-Low", "Both-High", "Both-Low"
-#   based on the Mito Gatekeeper score (from expr_avg_z) and Glycolysis score
-#   (computed from the same pipeline used for Figure 1D)
-# - Produces:
-#   (1) Figure1E_Heatmap_Clusters.pdf/.jpg  (heatmap + top annotation for cluster/state)
-#   (2) Figure1E_StateComposition_Bar.pdf/.jpg (counts of cancers per state)
+# Figure 1E: Unsupervised clustering 
 # =========================================================
-
-suppressPackageStartupMessages({
-  library(dplyr)
-  library(ComplexHeatmap)
-  library(circlize)
-})
+)
 
 # =========================================================
 # 0) TCGA NAME → CODE MAPPING
@@ -753,10 +695,6 @@ to_tcga_code <- function(x) {
   out[is.na(out)] <- x2[is.na(out)]
   out
 }
-
-# =========================================================
-# 1) Prepare matrix + metadata
-# =========================================================
 
 # =========================================================
 # 1) Prepare matrix + metadata (match using TCGA codes)
@@ -824,7 +762,7 @@ cluster_df$state <- factor(cluster_df$state,
                              "Both-Low (Low metabolic)"
                            ))
 
-# ✅ sanity: make sure state exists
+#  sanity: make sure state exists
 stopifnot(!all(is.na(cluster_df$state)))
 
 # =========================================================
@@ -890,7 +828,7 @@ dev.off()
 draw(ht1e)
 dev.off()
 
-cat("✅ Figure 1E generated without NA labels.\n")
+cat(" Figure 1E generated without NA labels.\n")
 
 # -------------------------
 # 5) Optional: state composition bar plot (how many cancers in each state)
@@ -901,8 +839,6 @@ df_state_counts <- cluster_df %>%
 
 p_state <- ggplot(df_state_counts, aes(x = state, y = n, fill = state)) +
   geom_col(width = 0.75) +
-  
-  # ✅ Add numbers on top of bars
   geom_text(aes(label = n), 
             vjust = -0.3, size = 4, fontface = "bold") +
   
@@ -942,10 +878,6 @@ write.table(cluster_df,
 # Figure 1F: Barplot of TCGA cancers colored by metabolic state
 # =========================================================
 
-library(dplyr)
-library(ggplot2)
-
-# Make sure df_1d has state assigned (from Figure 1E section)
 
 df_bar <- df_1d %>%
   mutate(
@@ -983,7 +915,7 @@ p_1f <- ggplot(df_bar,
     axis.text.y = element_text(size = 10),
     legend.position = "right",
     plot.title = element_text(hjust = 0.5, face = "bold"),
-    plot.margin = margin(15, 20, 40, 20)   # 👈 critical for bottom space
+    plot.margin = margin(15, 20, 40, 20)   
   ) +
   labs(
     x = NULL,
@@ -999,7 +931,7 @@ ggsave(file.path(out_dir, "Figure1F_MetabolicState_Barplot.jpg"),
        p_1f, width = 12, height = 7, dpi = 300)
 
 # -------------------------
-# 7) Save processed objects used for Figure 1 (fast reload)
+# 7) Save processed objects used for Figure 1 
 # -------------------------
 figure1_rds <- file.path(rds_dir, "Figure1_processed_objects.rds")
 saveRDS(
@@ -1017,27 +949,12 @@ write.table(expr_avg_z, file.path(out_dir, "Figure1A_exprAvgZ_matrix.tsv"),
             sep = "\t", quote = FALSE, col.names = NA)
 fwrite(meta, file.path(out_dir, "Figure1_Metadata_used.tsv"), sep = "\t")
 
-cat("\n✅ Done. Figure 1 saved to: ", out_dir, "\n")
-cat("✅ Cached RDS files saved to: ", rds_dir, "\n")
-
 # =========================================================
 # Supplementary Table S1:
-# Random mitochondrial gene-set control analysis
-# Purpose:
-# Test whether the curated mitochondrial gene set gives
-# stronger metabolic stratification than random gene sets
 # =========================================================
 
-suppressPackageStartupMessages({
-  library(dplyr)
-  library(tidyr)
-  library(ggplot2)
-})
-
-set.seed(123)
-
 # -----------------------------
-# 1. Inputs from your pipeline
+# 1. Inputs
 # -----------------------------
 # expr_mat = gene x sample log2(TPM + 0.001)
 # meta = metadata with sample15 and cancer_type
