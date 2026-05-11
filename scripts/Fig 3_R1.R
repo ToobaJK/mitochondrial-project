@@ -878,13 +878,8 @@ save_both(
 )
 
 ####====================================================
-## Strong Supplementary Figure 3c: Correlation volcano plot
+##Supplementary Figure 3c: Correlation volcano plot
 ####====================================================
-
-library(dplyr)
-library(ggplot2)
-library(ggrepel)
-library(stringr)
 
 label_drugs <- corr_summary_all %>%
   filter(padj < 0.05, R >= 0.15)
@@ -950,7 +945,6 @@ save_both(
   width = 10,
   height = 6
 )
-
 
 # =========================================================
 # Figure 3F: Pathway-level drug sensitivity
