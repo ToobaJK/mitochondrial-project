@@ -1,11 +1,11 @@
 # ============================================================
 # FIGURE 2 (DepMap): State-specific CRISPR dependencies
-# Inputs (you already downloaded):
+# Inputs
 #   1) CRISPRGeneEffect.csv
 #   2) Model.csv
 #   3) OmicsExpressionTPMLogp1HumanProteinCodingGenes.csv
 # Output:
-#   D:/UAEU/New paper_Dr. Ajaz/Depmap data/Figure2_outputs/
+#   D:/UAEU/Depmap data/Figure2_outputs/
 # ============================================================
 
 # ---- Packages ----
@@ -19,7 +19,7 @@ suppressPackageStartupMessages({
 })
 
 # ---- Paths (EDIT ONLY IF YOUR FOLDER NAME IS DIFFERENT) ----
-base_dir  <- "D:/UAEU/New paper_Dr. Ajaz/Depmap data"
+base_dir  <- "D:/UAEU/Depmap data"
 expr_file <- file.path(base_dir, "OmicsExpressionTPMLogp1HumanProteinCodingGenes.csv")
 crispr_file <- file.path(base_dir, "CRISPRGeneEffect.csv")
 model_file  <- file.path(base_dir, "Model.csv")
@@ -64,9 +64,7 @@ crispr <- fread(crispr_file)
 model  <- fread(model_file)
 
 # ============================================================
-# 1b) FIX your DepMap column naming issues
-#   - Your CRISPR file uses "V1" for the ID column
-#   - Some DepMap files include "GENE (ENTREZ)" format; remove "(...)" so gene symbols match
+# 1b) FIX  DepMap column naming issues
 # ============================================================
 
 # --- Standardize ID column to ModelID ---
@@ -245,12 +243,6 @@ fwrite(dat, file.path(out_dir, "Figure2_DepMap_Merged_Table_FIXED.csv"))
 
 # ============================================================
 # FIGURE 2 – DepMap CRISPR dependency across ALL gatekeeper genes
-# Saves for EACH gene:
-#   - Plot (PDF + JPG) with: overall p-value + mean±SD + n
-#   - Per-gene summary stats CSV
-# Also saves:
-#   - Master overall p-values table (BH-FDR across genes)
-#   - Master pairwise p-values table (BH within gene)
 # ============================================================
 
 suppressPackageStartupMessages({
@@ -744,7 +736,7 @@ ggsave(file.path(out_dir, "Figure2AA_KeyGene_Dependency_Multipanel.jpg"),
 message("Saved multipanel Figure 2A (PDF + JPG)")
 
 # ============================================================
-# Fig 2B: Top state-differential dependencies (heatmap) + your blue/white/red palette
+# Fig 2B: Top state-differential dependencies (heatmap) 
 # ============================================================
 
 # Gatekeeper genes that exist in dat
@@ -878,9 +870,7 @@ if (length(dep_genes_all) >= 10) {
 } else {
   message("Not enough gatekeeper genes found in dat to run Fig2B.")
 }
-# ============================================================
-# 8) Optional: Lineage-adjusted model (for one gene) and save results
-# ============================================================
+
 # ============================================================
 # Lineage-adjusted State effect (ALL genes → ONE file) =====not needed
 # ============================================================
@@ -987,15 +977,7 @@ ggsave(file.path(out_dir, "Fig2E_LineageAdjusted_Volcano.png"),
 # Figure 2C: TRUE volcano (Effect size vs -log10(FDR))
 # Lineage-adjusted: dep ~ State + Lineage
 # Effect size = (max mean across states) - (min mean across states)
-# Saves: PDF + PNG + CSV
 # ============================================================
-
-suppressPackageStartupMessages({
-  library(dplyr)
-  library(tidyr)
-  library(ggplot2)
-  library(ggrepel)
-})
 
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
@@ -1144,13 +1126,6 @@ ggsave(file.path(out_dir, "Figure2D_Ranked_Dependency_EffectSize.png"),
 # FIGURE 2E: Global mitochondrial gatekeeper dependency burden
 # Across metabolic states
 # ============================================================
-
-suppressPackageStartupMessages({
-  library(dplyr)
-  library(tidyr)
-  library(ggplot2)
-  library(ggpubr)
-})
 
 # ---- State order ----
 state_levels <- c(
