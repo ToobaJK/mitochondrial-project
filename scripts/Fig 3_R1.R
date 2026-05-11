@@ -3,7 +3,7 @@
 # ================================
 
 # -------- SETTINGS --------
-base_dir <- "D:/UAEU/New paper_Dr. Ajaz/Figure 3"
+base_dir <- "D:/UAEU/Figure 3"
 output_dir <- file.path(base_dir, "outputR1")
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
@@ -74,7 +74,6 @@ glyco_genes <- c(
   "PGAM1","PGAM4","ENO1","ENO2","ENO3","PKM","LDHA","LDHB"
 )
 
-# -------- READ EXPRESSION --------
 # -------- READ EXPRESSION --------
 message("Reading CCLE expression...")
 
@@ -446,7 +445,7 @@ anova_plot_df <- drug_anova %>%
   arrange(p_adj, desc(effect_range)) %>%
   slice_head(n = 40) %>%
   mutate(
-    drug_name = stringr::str_to_sentence(drug_name),   # ⭐ ADD THIS
+    drug_name = stringr::str_to_sentence(drug_name),   
     drug_label = ifelse(p_adj < 0.05, paste0(drug_name, "*"), drug_name),
     drug_label = factor(drug_label, levels = rev(drug_label))
   )
@@ -523,7 +522,7 @@ contrast_df <- drug_state %>%
       TRUE ~ "Neutral"
     ),
     
-    # ✅ FIRST create label
+    #  FIRST create label
     sensitivity_group_label = case_when(
       sensitivity_group == "Mito-High / Glyco-Low" ~ 
         "Mito-high\nGlyco-low\n(OXPHOS-dependent)",
@@ -532,7 +531,7 @@ contrast_df <- drug_state %>%
       TRUE ~ "Neutral"
     ),
     
-    # ✅ THEN convert to factor
+    # THEN convert to factor
     sensitivity_group_label = factor(
       sensitivity_group_label,
       levels = c(
@@ -669,7 +668,7 @@ save_both(
   width = 10,
   height = 8
 )
-# ===========================================================
+
 # ============================================================
 # FIGURE 3D: REPRESENTATIVE BOXPLOTS, ALL 4 STATES
 # ============================================================
@@ -774,7 +773,7 @@ p3D_supp <- ggplot(
   geom_boxplot(outlier.shape = NA, width = 0.65, color = "black") +
   geom_jitter(width = 0.18, alpha = 0.25, size = 0.5, color = "black") +
   
-  facet_wrap(~ drug_label, scales = "free_y", ncol = 4) +  # 🔥 wider grid
+  facet_wrap(~ drug_label, scales = "free_y", ncol = 4) +  
   
   scale_fill_manual(values = state_colors, drop = FALSE) +
   scale_x_discrete(labels = state_labels, drop = FALSE) +
@@ -923,7 +922,7 @@ corr_colors <- c(
 pS_corr_volcano <- ggplot(corr_summary_all, aes(x = R, y = neglog10_padj)) +
   geom_point(aes(color = direction), alpha = 0.75, size = 2) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "grey40") +
-  geom_vline(xintercept = 0.15, linetype = "dashed", color = "red") +   # ✅ plus added
+  geom_vline(xintercept = 0.15, linetype = "dashed", color = "red") +   
   geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "grey40") +
   geom_text_repel(
     data = label_drugs,
@@ -952,11 +951,6 @@ save_both(
   height = 6
 )
 
-
-# =========================================================
-# Figure 3F: Pathway distribution of top state-specific drugs
-# Top 15 glycolytic-sensitive + top 15 OXPHOS-sensitive
-# =========================================================
 
 # =========================================================
 # Figure 3F: Pathway-level drug sensitivity
@@ -1110,7 +1104,7 @@ p3F_pathway <- ggplot(
   ) +
   guides(
     fill = guide_legend(
-      ncol = 1   # 🔥 THIS forces one-by-one vertical list
+      ncol = 1   
     )
   ) +
   theme(
