@@ -1,11 +1,5 @@
 # ============================================================
 # FIGURE 2 (DepMap): State-specific CRISPR dependencies
-# Inputs
-#   1) CRISPRGeneEffect.csv
-#   2) Model.csv
-#   3) OmicsExpressionTPMLogp1HumanProteinCodingGenes.csv
-# Output:
-#   D:/UAEU/Depmap data/Figure2_outputs/
 # ============================================================
 
 # ---- Packages ----
@@ -453,13 +447,6 @@ message("Tip: If you want pairwise p-values on the plot, set show_pairwise <- TR
 # ============================================================
 # 6) supplementarey 2A
 # ============================================================
-suppressPackageStartupMessages({
-  library(dplyr)
-  library(tidyr)
-  library(ggplot2)
-})
-
-dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
 state_levels <- c( "Mito-High / Glyco-Low (OXPHOS-dominant)",
                    "Mito-Low / Glyco-High (Glycolytic)",
@@ -562,7 +549,7 @@ ggsave(file.path(out_dir, "Figure2Supplementary_AllGenes_Multipanel.jpg"),
 
 message("Saved supplementary all-gene multipanel figure (PDF + JPG) in: ", out_dir)
 # ============================================================
-# 6) FIGURE 2A: State-specific dependency for key genes (boxplots)
+# 6) FIGURE 2A: State-specific dependency for key genes 
 # ============================================================
 key_genes <- c("GPX4","SLC7A11","DNM1L","MFN2","SLC25A4","VDAC1","BAX","BAK1")
 key_genes <- key_genes[key_genes %in% colnames(dat)]
