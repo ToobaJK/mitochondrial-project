@@ -477,7 +477,7 @@ p3B <- ggplot(
 save_both(p3B, "Figure3B_ANOVA_All4States_EffectSize", width = 9, height = 10)
 
 # ============================================================
-# FIGURE 3C: VOLCANO OXPHOS-DOMINANT VS GLYCOLYTIC ONLY
+# FIGURE 3C: VOLCANO OXPHOS-DOMINANT VS GLYCOLYTIC 
 # ============================================================
 
 contrast_df <- drug_state %>%
@@ -956,12 +956,6 @@ save_both(
 # Figure 3F: Pathway-level drug sensitivity
 # Top 15 OXPHOS-sensitive + top 15 glycolytic-sensitive
 # =========================================================
-
-library(dplyr)
-library(ggplot2)
-library(stringr)
-library(forcats)
-
 # ---- 1. Select top 15 from each state ----
 top15_each <- top_combined %>%
   mutate(
