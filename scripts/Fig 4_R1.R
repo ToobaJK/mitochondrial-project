@@ -6,7 +6,7 @@
 # -----------------------------
 # SETTINGS
 # -----------------------------
-base_dir   <- "D:/UAEU/New paper_Dr. Ajaz/Figure 4"
+base_dir   <- "D:/UAEU/Figure 4"
 output_dir <- file.path(base_dir, "outputR1")
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
@@ -134,7 +134,7 @@ redox_genes <- c(
   "NFE2L2","ACSL4"
 )
 
-# 🔥 ADD THIS (critical for Figure 4C)
+# Cyt genes
 cyt_genes <- c("GZMA", "PRF1")
 
 # Combine ALL genes needed in pipeline
@@ -292,9 +292,6 @@ write.csv(
   row.names = FALSE
 )
 
-# -----------------------------
-# BUILD EXPRESSION MATRIX
-# -----------------------------
 # -----------------------------
 # BUILD EXPRESSION MATRIX
 # -----------------------------
@@ -703,7 +700,6 @@ write.csv(
   row.names = FALSE
 )
 
-# Overall Kruskal-Wallis test
 # Overall Kruskal-Wallis test
 kw_hypoxia <- kruskal.test(HypoxiaScore ~ metabolic_state, data = fig4b_dat)
 print(kw_hypoxia)
@@ -1469,12 +1465,6 @@ cat("\nDone. Outputs saved in:\n", output_dir, "\n")
 # FIGURE 4F (FINAL)
 # Integrated correlation map of metabolic programs
 # =========================================================
-
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(tibble)
-
 # -----------------------------
 # Program score table
 # -----------------------------
@@ -1557,10 +1547,6 @@ cor_df <- cor_df %>%
     )
   )
 
-# -----------------------------
-# ✨ IMPORTANT IMPROVEMENTS
-# -----------------------------
-
 # Remove diagonal + show only meaningful correlations
 cor_df <- cor_df %>%
   mutate(
@@ -1608,8 +1594,6 @@ cor_df <- cor_df %>%
     )
   )
 
-# -----------------------------
-# Plot
 # -----------------------------
 # Plot
 # -----------------------------
