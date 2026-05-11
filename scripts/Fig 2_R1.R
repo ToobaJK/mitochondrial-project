@@ -1,5 +1,6 @@
 # ============================================================
 # FIGURE 2 (DepMap): State-specific CRISPR dependencies
+CREATED BY: TOOBA
 # ============================================================
 
 # ---- Packages ----
@@ -12,7 +13,7 @@ suppressPackageStartupMessages({
   library(stringr)
 })
 
-# ---- Paths (EDIT ONLY IF YOUR FOLDER NAME IS DIFFERENT) ----
+# ---- Paths  ----
 base_dir  <- "D:/UAEU/Depmap data"
 expr_file <- file.path(base_dir, "OmicsExpressionTPMLogp1HumanProteinCodingGenes.csv")
 crispr_file <- file.path(base_dir, "CRISPRGeneEffect.csv")
@@ -157,7 +158,6 @@ expr_sub[, State := factor(State,
 # ---- Check distribution ----
 table(expr_sub$State)
 
-table(expr_sub$State)
 # ============================================================
 # 3) Merge with Model metadata
 # ============================================================
@@ -238,12 +238,6 @@ fwrite(dat, file.path(out_dir, "Figure2_DepMap_Merged_Table_FIXED.csv"))
 # ============================================================
 # FIGURE 2 – DepMap CRISPR dependency across ALL gatekeeper genes
 # ============================================================
-
-suppressPackageStartupMessages({
-  library(dplyr)
-  library(ggplot2)
-  library(ggpubr)
-})
 
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
